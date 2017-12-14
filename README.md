@@ -5,8 +5,14 @@ Library to configure backups in Azure Blob Storage of files within the project.
 ## Instalation
 
 ```
-pip install ssh+git@bitbucket.org:vonpix/python-remote-backup.git
+pip install -e git+https://github.com/ragonzal/django-azure-backup.git@master#egg=django_azure_backup
 ```
+
+Or if you want to add it to your requirements.txt
+```
+-e git+https://github.com/ragonzal/django-azure-backup.git@master#egg=django_azure_backup
+```
+
 
 In your settings.py, add the package to your installed apps:
 ```

@@ -10,7 +10,7 @@ def read(fname):
         return u''
 
 setup(
-    name='django-azure-backup',
+    name='django_azure_backup',
     version=app.__version__,
     description=read('DESCRIPTION'),
     long_description=read('README.md'),
