@@ -113,9 +113,8 @@ class BackupService:
             for root, dirs, files in os.walk(folder['path']):
                 for each in files:
                     upload = True
-
+                    full_path = os.path.join(root, each)
                     if check_date:
-                        full_path = os.path.join(root, each)
                         modified = datetime.fromtimestamp(os.path.getmtime(full_path))
                         if modified < yesterday:
                             upload = False
