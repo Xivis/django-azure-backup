@@ -56,14 +56,15 @@ class BackupService:
             mail_admins(self.subject, 'No files were backed up')
         else:
             full_message = ''
-
+            errors = False
             for each in self.summary:
-                file = '{}'.format(each['file'])
                 if each['status'] == 'error':
-                    file = '{}: ERROR ({})'.format(file, each['message'])
-                full_message = '{}{}\n'.format(full_message, file)
+                    errors = True
+                    file = '{}: ERROR ({})'.format(each['file'], each['message'])
+                    full_message = '{}{}\n'.format(full_message, file)
 
-            mail_admins(self.subject, full_message)
+            if errors:
+                mail_admins(self.subject, full_message)
 
     def upload_file(self, azure_path, file_path):
         try:
