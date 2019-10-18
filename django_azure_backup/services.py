@@ -51,7 +51,20 @@ class BackupService:
         if not self.azure_container in containers:
             self.connection.create_container(self.azure_container)
 
+    def send_weekly_report(self):
+        one_week_ago = datetime.today() - timedelta(days=7)
+        files_uploaded = FileBackup.objects.filter(created_at__gte=one_week_ago).count()
+        error_count = FileBackupError.objects.filter(created_at__gte=one_week_ago).count()
+        body = f"""
+        There were {files_uploaded} files successfully backed up this week. \n
+        There were {error_count} errors while trying to back up files this week. \n
+        """
+        mail_admins(f'{self.subject} weekly report', body)
+
     def email_admins(self):
+        if date.today().weekday() == 0:
+            self.send_weekly_report()
+
         if len(self.summary) == 0:
             mail_admins(self.subject, 'No files were backed up')
         else:
