@@ -55,14 +55,14 @@ class BackupService:
         one_week_ago = datetime.today() - timedelta(days=7)
         files_uploaded = FileBackup.objects.filter(created_at__gte=one_week_ago).count()
         error_count = FileBackupError.objects.filter(created_at__gte=one_week_ago).count()
-        subject = f'{self.subject} weekly report'
+        subject = '{} weekly report'.format(self.subject)
         if not files_uploaded and not error_count:
             mail_admins(subject, 'No files were backed up')
         else:
-            body = f"""
-            There were {files_uploaded} files successfully backed up this week. \n
-            There were {error_count} errors while trying to back up files this week. \n
-            """
+            body = """
+            There were {} files successfully backed up this week. \n
+            There were {} errors while trying to back up files this week. \n
+            """.format(files_uploaded, error_count)
             mail_admins(subject, body)
 
     def email_admins(self):
