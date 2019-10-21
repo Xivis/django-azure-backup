@@ -51,19 +51,35 @@ class BackupService:
         if not self.azure_container in containers:
             self.connection.create_container(self.azure_container)
 
+    def send_weekly_report(self):
+        one_week_ago = datetime.today() - timedelta(days=7)
+        files_uploaded = FileBackup.objects.filter(created_at__gte=one_week_ago).count()
+        error_count = FileBackupError.objects.filter(created_at__gte=one_week_ago).count()
+        subject = '{} weekly report'.format(self.subject)
+        if not files_uploaded and not error_count:
+            mail_admins(subject, 'No files were backed up')
+        else:
+            body = """
+            There were {} files successfully backed up this week. \n
+            There were {} errors while trying to back up files this week. \n
+            """.format(files_uploaded, error_count)
+            mail_admins(subject, body)
+
     def email_admins(self):
-        if len(self.summary) == 0:
-            mail_admins(self.subject, 'No files were backed up')
+        if date.today().weekday() == 0:
+            self.send_weekly_report()
+
         else:
             full_message = ''
-
+            errors = False
             for each in self.summary:
-                file = '{}'.format(each['file'])
                 if each['status'] == 'error':
-                    file = '{}: ERROR ({})'.format(file, each['message'])
-                full_message = '{}{}\n'.format(full_message, file)
+                    errors = True
+                    file = '{}: ERROR ({})'.format(each['file'], each['message'])
+                    full_message = '{}{}\n'.format(full_message, file)
 
-            mail_admins(self.subject, full_message)
+            if errors:
+                mail_admins(self.subject, full_message)
 
     def upload_file(self, azure_path, file_path):
         try:
