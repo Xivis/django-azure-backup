@@ -30,7 +30,7 @@ class FileBackupError(models.Model):
     azure_path = models.CharField(max_length=255, null=False, blank=False)
     retry = models.BooleanField(default=True)
     retries = models.IntegerField(default=0)
-    file_backup = models.ForeignKey(FileBackup, on_delete=models.SET_NULL)
+    file_backup = models.ForeignKey(FileBackup, on_delete=models.CASCADE)
 
     def __str__(self):
         if self.retry:
